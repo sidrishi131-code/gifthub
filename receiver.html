@@ -1,61 +1,47 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Your Gift 🎁</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
+<title>Your Gift 🎁</title>
 <style>
-body{
-  margin:0;
-  font-family:Arial;
-  background:linear-gradient(135deg,#1a001f,#3b004f);
-  color:#fff;
-  text-align:center;
-}
-.box{
-  max-width:400px;
-  margin:60px auto;
-  background:#120016;
-  padding:25px;
-  border-radius:16px;
-  box-shadow:0 0 20px rgba(255,0,150,0.4);
-}
-h2{margin-bottom:10px}
-.code{
-  background:#000;
-  padding:12px;
-  border-radius:10px;
-  margin-top:15px;
-  font-size:18px;
-  letter-spacing:2px;
-}
+  body {
+    font-family: Arial;
+    background: linear-gradient(135deg, #ffeff5, #ffc1cc);
+    text-align: center;
+    padding: 20px;
+  }
+  .card {
+    padding: 20px;
+    margin: 10px auto;
+    width: 90%;
+    max-width: 300px;
+    border-radius: 15px;
+    background: #fff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
 </style>
 </head>
-
 <body>
 
-<div class="box">
-  <h2 id="title">Loading...</h2>
-  <p id="from"></p>
-  <div class="code" id="code"></div>
-</div>
+<h2>Guess Your Gift 🎁</h2>
+<div id="result" class="card"></div>
 
 <script>
 const params = new URLSearchParams(window.location.search);
+const id = params.get("id");
 
-const gift = params.get("gift");
-const code = params.get("code");
-const from = params.get("from");
+const data = JSON.parse(localStorage.getItem("gift_"+id));
 
-if(!gift || !code){
-  document.body.innerHTML="<h2>Invalid or Expired Link 😢</h2>";
-}else{
-  document.getElementById("title").innerText =
-    "You received a " + gift + " Gift 🎉";
-  document.getElementById("from").innerText =
-    "From: " + (from || "Someone Special ❤️");
-  document.getElementById("code").innerText = code;
+if(!data){
+  document.getElementById("result").innerHTML = "<b>Invalid or expired link 😢</b>";
+} else {
+  document.getElementById("result").innerHTML = `
+    <h3>You got ${data.gift} 🎉</h3>
+    <p><b>From:</b> ${data.sender}</p>
+    <p><b>Message:</b> ${data.message || "No message"}</p>
+    <p><b>Code:</b> ${data.code}</p>
+  `;
 }
 </script>
 
