@@ -2,149 +2,113 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Send a Gift ❤️</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
+<title>Send a Surprise Gift 🎁</title>
 <style>
-body{
-  margin:0;
-  font-family: Arial, sans-serif;
-  background: linear-gradient(135deg,#1a001f,#3b004f);
-  color:#fff;
-}
-
-.container{
-  max-width:420px;
-  margin:40px auto;
-  background:#120016;
-  padding:20px;
-  border-radius:16px;
-  box-shadow:0 0 20px rgba(255,0,150,0.3);
-}
-
-h2{
-  text-align:center;
-  margin-bottom:10px;
-}
-
-p{
-  text-align:center;
-  color:#ffb3e6;
-  font-size:14px;
-}
-
-input, textarea{
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  border:none;
-  border-radius:10px;
-  outline:none;
-  font-size:15px;
-}
-
-textarea{resize:none}
-
-.gifts{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-  margin-top:15px;
-}
-
-.gift{
-  padding:14px;
-  border-radius:14px;
-  text-align:center;
-  font-weight:bold;
-  cursor:pointer;
-  border:2px solid transparent;
-}
-
-.amazon{background:#ff9900;color:#000}
-.flipkart{background:#2874f0}
-.swiggy{background:#fc8019}
-.zomato{background:#e23744}
-
-.gift.active{
-  border:2px solid #fff;
-  box-shadow:0 0 10px #fff;
-}
-
-button{
-  width:100%;
-  padding:14px;
-  margin-top:18px;
-  border:none;
-  border-radius:12px;
-  font-size:16px;
-  font-weight:bold;
-  background:linear-gradient(90deg,#ff0080,#ff4da6);
-  color:white;
-  cursor:pointer;
-}
-
-.linkBox{
-  margin-top:15px;
-  background:#000;
-  padding:10px;
-  border-radius:10px;
-  word-break:break-all;
-  display:none;
-}
+  body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #ffc1cc, #ffeff5);
+    margin: 0;
+    padding: 0;
+    text-align: center;
+  }
+  h1 { margin-top: 20px; color: #d90429; }
+  p { color: #720026; }
+  .cards { display: flex; overflow-x: auto; padding: 20px; gap: 15px; }
+  .card {
+    flex: 0 0 150px;
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    cursor: pointer;
+    padding: 20px;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .card:hover { transform: scale(1.05); box-shadow: 0 6px 15px rgba(0,0,0,0.2); }
+  .selected { border: 2px solid #d90429; box-shadow: 0 0 20px #d90429; }
+  input, textarea, button {
+    margin: 10px 0;
+    padding: 10px;
+    width: 90%;
+    max-width: 300px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+  }
+  button:disabled { background: #ccc; cursor: not-allowed; }
+  button { background: #d90429; color: #fff; border: none; transition: 0.2s; }
+  button:hover:not(:disabled) { background: #720026; }
 </style>
 </head>
-
 <body>
 
-<div class="container">
-  <h2>Send a Surprise Gift 🎁</h2>
-  <p>Create a secret gift link for someone special</p>
+<h1>Choose a Gift to Send ❤️</h1>
+<p>Surprise your special one with a mystery gift</p>
 
-  <input id="name" placeholder="Receiver name">
-  <textarea id="msg" rows="3" placeholder="Your message"></textarea>
-  <input id="code" placeholder="Gift Code">
+<div class="cards" id="cards"></div>
 
-  <div class="gifts">
-    <div class="gift amazon" onclick="selectGift('Amazon',this)">Amazon</div>
-    <div class="gift flipkart" onclick="selectGift('Flipkart',this)">Flipkart</div>
-    <div class="gift swiggy" onclick="selectGift('Swiggy',this)">Swiggy</div>
-    <div class="gift zomato" onclick="selectGift('Zomato',this)">Zomato</div>
-  </div>
-
-  <button onclick="generate()">Generate Gift Link 💝</button>
-
-  <div id="linkBox" class="linkBox"></div>
-</div>
+<input type="text" id="receiverName" placeholder="Receiver Name" disabled>
+<input type="text" id="senderName" placeholder="Your Name" disabled>
+<textarea id="message" placeholder="Optional message (max 150 chars)" maxlength="150" disabled></textarea>
+<br>
+<button id="generateBtn" disabled>Generate Surprise Link 🎁</button>
+<br><br>
+<input type="text" id="generatedLink" readonly style="width:90%; max-width:300px;">
 
 <script>
-let selectedGift="";
+const gifts = [
+  {name:"Amazon", color:"#FF9900"},
+  {name:"Flipkart", color:"#2874F0"},
+  {name:"Swiggy", color:"#FC8019"},
+  {name:"Zomato", color:"#FF4C4C"}
+];
 
-function selectGift(gift,el){
-  selectedGift=gift;
-  document.querySelectorAll('.gift').forEach(g=>g.classList.remove('active'));
-  el.classList.add('active');
+let selectedGift = null;
+
+const cardsDiv = document.getElementById('cards');
+gifts.forEach(g => {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.style.background = g.color;
+  card.innerHTML = <b>${g.name}</b>;
+  card.onclick = () => {
+    selectedGift = g.name;
+    document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+
+    // Enable form fields
+    document.getElementById('receiverName').disabled = false;
+    document.getElementById('senderName').disabled = false;
+    document.getElementById('message').disabled = false;
+    checkGenerateBtn();
+  };
+  cardsDiv.appendChild(card);
+});
+
+function checkGenerateBtn() {
+  const receiver = document.getElementById('receiverName').value.trim();
+  const sender = document.getElementById('senderName').value.trim();
+  document.getElementById('generateBtn').disabled = !(selectedGift && receiver && sender);
 }
 
-function generate(){
-  const name=document.getElementById("name").value;
-  const msg=document.getElementById("msg").value;
-  const code=document.getElementById("code").value;
+document.getElementById('receiverName').addEventListener('input', checkGenerateBtn);
+document.getElementById('senderName').addEventListener('input', checkGenerateBtn);
 
-  if(!name || !code || !selectedGift){
-    alert("Sab fill karo bhai 😅");
-    return;
-  }
+document.getElementById('generateBtn').onclick = () => {
+  const receiver = document.getElementById('receiverName').value.trim();
+  const sender = document.getElementById('senderName').value.trim();
+  const message = document.getElementById('message').value.trim();
+  const code = Math.random().toString(36).substring(2,8);
 
-  const id=Date.now();
-  const data={name,msg,code,gift:selectedGift};
-  localStorage.setItem("gift_"+id,JSON.stringify(data));
+  // Save in localStorage
+  localStorage.setItem("gift_"+code, JSON.stringify({gift:selectedGift, receiver, sender, message, code}));
 
-  const link=location.origin+location.pathname.replace("sender","receiver")+"?id="+id;
-  const box=document.getElementById("linkBox");
-  box.style.display="block";
-  box.innerText=link;
-}
+  // Generate link for receiver
+  const link = ${window.location.origin}/receiver.html?id=${code};
+  document.getElementById('generatedLink').value = link;
+  document.getElementById('generatedLink').select();
+  document.execCommand("copy");
+  alert("Link copied! Share it with your receiver ❤️");
+};
 </script>
 
 </body>
