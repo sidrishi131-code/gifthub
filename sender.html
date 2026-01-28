@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Send a Gift ❤️</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body{
+  margin:0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg,#1a001f,#3b004f);
+  color:#fff;
+}
+
+.container{
+  max-width:420px;
+  margin:40px auto;
+  background:#120016;
+  padding:20px;
+  border-radius:16px;
+  box-shadow:0 0 20px rgba(255,0,150,0.3);
+}
+
+h2{
+  text-align:center;
+  margin-bottom:10px;
+}
+
+p{
+  text-align:center;
+  color:#ffb3e6;
+  font-size:14px;
+}
+
+input, textarea{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border:none;
+  border-radius:10px;
+  outline:none;
+  font-size:15px;
+}
+
+textarea{resize:none}
+
+.gifts{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-top:15px;
+}
+
+.gift{
+  padding:14px;
+  border-radius:14px;
+  text-align:center;
+  font-weight:bold;
+  cursor:pointer;
+  border:2px solid transparent;
+}
+
+.amazon{background:#ff9900;color:#000}
+.flipkart{background:#2874f0}
+.swiggy{background:#fc8019}
+.zomato{background:#e23744}
+
+.gift.active{
+  border:2px solid #fff;
+  box-shadow:0 0 10px #fff;
+}
+
+button{
+  width:100%;
+  padding:14px;
+  margin-top:18px;
+  border:none;
+  border-radius:12px;
+  font-size:16px;
+  font-weight:bold;
+  background:linear-gradient(90deg,#ff0080,#ff4da6);
+  color:white;
+  cursor:pointer;
+}
+
+.linkBox{
+  margin-top:15px;
+  background:#000;
+  padding:10px;
+  border-radius:10px;
+  word-break:break-all;
+  display:none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>Send a Surprise Gift 🎁</h2>
+  <p>Create a secret gift link for someone special</p>
+
+  <input id="name" placeholder="Receiver name">
+  <textarea id="msg" rows="3" placeholder="Your message"></textarea>
+  <input id="code" placeholder="Gift Code">
+
+  <div class="gifts">
+    <div class="gift amazon" onclick="selectGift('Amazon',this)">Amazon</div>
+    <div class="gift flipkart" onclick="selectGift('Flipkart',this)">Flipkart</div>
+    <div class="gift swiggy" onclick="selectGift('Swiggy',this)">Swiggy</div>
+    <div class="gift zomato" onclick="selectGift('Zomato',this)">Zomato</div>
+  </div>
+
+  <button onclick="generate()">Generate Gift Link 💝</button>
+
+  <div id="linkBox" class="linkBox"></div>
+</div>
+
+<script>
+let selectedGift="";
+
+function selectGift(gift,el){
+  selectedGift=gift;
+  document.querySelectorAll('.gift').forEach(g=>g.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function generate(){
+  const name=document.getElementById("name").value;
+  const msg=document.getElementById("msg").value;
+  const code=document.getElementById("code").value;
+
+  if(!name || !code || !selectedGift){
+    alert("Sab fill karo bhai 😅");
+    return;
+  }
+
+  const id=Date.now();
+  const data={name,msg,code,gift:selectedGift};
+  localStorage.setItem("gift_"+id,JSON.stringify(data));
+
+  const link=location.origin+location.pathname.replace("sender","receiver")+"?id="+id;
+  const box=document.getElementById("linkBox");
+  box.style.display="block";
+  box.innerText=link;
+}
+</script>
+
+</body>
+</html>
